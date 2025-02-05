@@ -1,11 +1,61 @@
-import Image from "next/image";
+'use client';
+
+import { Avatar, AvatarBorderVariants, AvatarVariants } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { generateUsers } from "@/lib/data";
+import { useState } from "react";
+
+const users = generateUsers(50);
 
 export default function Home() {
+
+  const [size, setSize] = useState<AvatarVariants["size"]>("default");
+  const [border, setBorder] = useState<AvatarBorderVariants["border"]>("default");
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-       
-      </main>
-    </div>
+    <main className="flex min-h-screen flex-col items-center justify-start px-10 bg-purple-900">
+      
+      <div className="my-24 flex gap-12 w-full">
+
+        <Select onValueChange={(size) => setSize(size as AvatarVariants["size"])}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Size" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="default">default</SelectItem>
+            <SelectItem value="sm">sm</SelectItem>
+            <SelectItem value="md">md</SelectItem>
+            <SelectItem value="lg">lg</SelectItem>
+            <SelectItem value="xlg">xlg</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select onValueChange={(border) => setBorder(border as AvatarBorderVariants["border"])}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Border" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="default">default</SelectItem>
+            <SelectItem value="none">none</SelectItem>
+            <SelectItem value="blue">blue</SelectItem>
+          </SelectContent>
+        </Select>
+
+      </div>
+
+      <div className="w-full flex flex-wrap [&>div]:-ml-4 ml-4 [&>div]:mt-4 -mt-4">
+        {users.map((user, i) => (
+          <Avatar 
+            key={i} 
+            imgUrl={user.imgUrl} 
+            fallbackText={user.fallbackText} 
+            userName={user.userName}
+            size={size}
+            border={border}
+          />
+        ))}
+      </div>
+
+    </main>
   );
 }

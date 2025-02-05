@@ -4,8 +4,9 @@ import * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
 import { cn } from "@/lib/utils"
+import { cva, VariantProps } from "class-variance-authority"
 
-const Avatar = React.forwardRef<
+const AvatarRoot = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
 >(({ className, ...props }, ref) => (
@@ -18,7 +19,7 @@ const Avatar = React.forwardRef<
     {...props}
   />
 ))
-Avatar.displayName = AvatarPrimitive.Root.displayName
+AvatarRoot.displayName = AvatarPrimitive.Root.displayName
 
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
@@ -47,4 +48,68 @@ const AvatarFallback = React.forwardRef<
 ))
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
 
-export { Avatar, AvatarImage, AvatarFallback }
+const avatarRootVariants = cva("", {
+  variants: {
+    size: {
+      default: "h-10 w-10",
+      sm: "h-8 w-8",
+      md: "h-14 w-14",
+      lg: "h-20 w-20",
+      xlg: "h-25 w-25"
+    }
+  },
+  defaultVariants: {
+    size: "default"
+  }
+})
+
+const avatarBorderVariants = cva("absolute rounded-full bg-gradient-to-r", 
+  {
+    variants: {
+      size: {
+        default: "-inset-0.5",
+        sm: "-inset-0.5",
+        md: "-inset-1",
+        lg: "-inset-1",
+        xlg: "-inset-1.5"
+      },
+     border: {
+      none: "inset-0",
+      default: "from-[#78d993] to-[#e087ff]",
+      blue: "from-blue-500 via-sky-700 to-sky-200"
+     } 
+    },
+  }
+);
+
+type AvatarVariants = VariantProps<typeof avatarRootVariants>;
+type AvatarBorderVariants = VariantProps<typeof avatarBorderVariants>;
+
+interface AvatarProps {
+  imgUrl: string;
+  userName: string;
+  fallbackText: string;
+}
+
+const Avatar = ({imgUrl, userName, fallbackText, size, border}: AvatarProps & AvatarVariants & AvatarBorderVariants) => (
+  <div className="relative inline-block">
+    <div className={cn(avatarBorderVariants({ size, border }))}/>
+    <AvatarRoot className={cn(avatarRootVariants({ size }))}>
+      <AvatarImage 
+        alt={`Avatar for ${userName}`}
+        src={imgUrl} 
+        className="bg-transparent border border-purple-900 rounded-full"
+      />
+      <AvatarFallback className="bg-transparent border border-purple-900 rounded-full">
+        {fallbackText}
+      </AvatarFallback>
+    </AvatarRoot>
+
+  </div>
+);
+
+Avatar.displayName = "Avatar";
+
+export { Avatar }
+export type { AvatarVariants, AvatarBorderVariants }
+
